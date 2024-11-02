@@ -1,0 +1,104 @@
+{
+  "name": "cookie-cloud-to-env",
+  "version": "0.1.0",
+  "description": "将 CookieCloud 接口返回值转换为环境变量 .env 配置",
+  "author": "CaoMeiYouRen",
+  "private": true,
+  "license": "MIT",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "lint": "cross-env NODE_ENV=production eslint src --fix --ext .ts,.js,.cjs,.mjs",
+    "release": "semantic-release",
+    "prebuild": "rimraf dist",
+    "build": "cross-env NODE_ENV=production tsup",
+    "dev": "cross-env NODE_ENV=development tsx watch src/index.ts",
+    "dev:tsup": "cross-env NODE_ENV=development tsup --watch",
+    "start": "node ./dist/index",
+    "start:tsx": "cross-env NODE_ENV=production tsx src/index.ts",
+    "commit": "cz",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^18.6.1",
+    "@commitlint/config-conventional": "^18.6.3",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@types/debug": "^4.1.12",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.8.6",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "commitizen": "^4.3.1",
+    "conventional-changelog-cli": "^5.0.0",
+    "conventional-changelog-cmyr-config": "^2.1.2",
+    "cross-env": "^7.0.3",
+    "cz-conventional-changelog": "^3.3.0",
+    "cz-conventional-changelog-cmyr": "^1.1.1",
+    "debug": "^4.3.7",
+    "eslint": "^8.57.1",
+    "eslint-config-cmyr": "^1.1.32",
+    "eslint-plugin-import": "^2.31.0",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "rimraf": "^6.0.1",
+    "semantic-release": "21.0.1",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog-cmyr"
+    }
+  },
+  "changelog": {
+    "language": "zh"
+  },
+  "lint-staged": {
+    "*.{js,ts}": [
+      "npm run lint",
+      "git add"
+    ]
+  },
+  "keywords": [
+    "cookie",
+    "cloud",
+    "env"
+  ],
+  "homepage": "https://github.com/CaoMeiYouRen/cookie-cloud-to-env#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CaoMeiYouRen/cookie-cloud-to-env.git"
+  },
+  "bugs": {
+    "url": "https://github.com/CaoMeiYouRen/cookie-cloud-to-env/issues"
+  },
+  "dependencies": {
+    "await-to-js": "^3.0.0",
+    "dotenv": "^16.4.5",
+    "fs-extra": "^11.2.0",
+    "isomorphic-unfetch": "^4.0.2",
+    "tslib": "^2.8.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "compare-func": "^2.0.0"
+    }
+  },
+  "type": "module"
+}
