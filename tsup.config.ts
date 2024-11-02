@@ -3,7 +3,7 @@ import { defineConfig } from 'tsup'
 export default defineConfig({
     platform: 'node', // 目标平台
     entry: ['src/index.ts'],
-    format: ['cjs', 'esm'],
+    format: ['esm'],
     outExtension({ format }) {
         switch (format) {
             case 'cjs':
@@ -34,6 +34,7 @@ export default defineConfig({
     clean: true,
     dts: true,
     minify: false, // 缩小输出
+    treeshake: true, // 移除未使用的代码
     shims: true, // 注入 cjs 和 esm 填充代码，解决 import.meta.url 和 __dirname 的兼容问题
     esbuildOptions(options, context) { // 设置编码格式
         options.charset = 'utf8'
@@ -41,4 +42,7 @@ export default defineConfig({
     // external: [], // 排除的依赖项
     // noExternal: [/(.*)/], // 将依赖打包到一个文件中
     // bundle: true,
+    env: {
+        NODE_ENV: 'production',
+    },
 })

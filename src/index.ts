@@ -1,27 +1,44 @@
+/* eslint-disable no-undef, no-sync */
 import fs from 'fs'
-import dotenv from 'dotenv'
-import YAML from 'yaml'
-import log4js from 'log4js'
+import type { Logger } from 'log4js'
 
-dotenv.config({
-    path: ['.env.local'],
-})
+if (process.env.NODE_ENV === 'development') {
+    const dotenv = await import('dotenv')
+    dotenv.config({
+        path: ['.env.local'],
+    })
+}
 
-const logger = log4js.getLogger()
-logger.level = 'debug'
+let logger: Console | Logger = console
+if (process.env.NODE_ENV === 'development') {
+    const log4js = await import('log4js')
+    logger = log4js.getLogger()
+    logger.level = 'debug'
+}
 
 // 环境变量；域名
 let cookieMap: { [key: string]: string } = {}
 
 // 如果有，则读取 cookie-map.yml
 if (fs.existsSync('cookie-map.yml')) {
+    logger.info('Reading cookie-map.yml...')
+    const YAML = await import('yaml')
     cookieMap = YAML.parse(fs.readFileSync('cookie-map.yml', 'utf8'))?.cookieMap || {}
+} else if (fs.existsSync('cookie-map.json')) {   // 如果有，则读取 cookie-map.json
+    logger.info('Reading cookie-map.json...')
+    cookieMap = JSON.parse(fs.readFileSync('cookie-map.json', 'utf8')).cookieMap || {}
+} else {
+    logger.info('No cookie-map.yml or cookie-map.json found.')
 }
 
 const COOKIE_CLOUD_URL = process.env.COOKIE_CLOUD_URL
 const COOKIE_CLOUD_PASSWORD = process.env.COOKIE_CLOUD_PASSWORD
 
 async function getCloudCookie(): Promise<any> {
+    if (!COOKIE_CLOUD_URL || !COOKIE_CLOUD_PASSWORD) {
+        logger.error('COOKIE_CLOUD_URL or COOKIE_CLOUD_PASSWORD is not set.')
+        process.exit(1)
+    }
     const url = COOKIE_CLOUD_URL
     const payload = JSON.stringify({ password: COOKIE_CLOUD_PASSWORD })
     const headers = { 'Content-Type': 'application/json' }
@@ -75,7 +92,6 @@ async function main() {
 
         env = env.trim()
         logger.info('Writing cookies to .env file...')
-        // eslint-disable-next-line no-sync
         fs.writeFileSync('.env', env, { encoding: 'utf-8' })
         logger.info('.env file written successfully.')
     } catch (error) {
