@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === 'development') {
 
 let logger: Console | Logger = console
 if (process.env.NODE_ENV === 'development') {
-    const log4js = await import('log4js')
+    const log4js = (await import('log4js')).default
     logger = log4js.getLogger()
     logger.level = 'debug'
 }
@@ -80,11 +80,25 @@ async function main() {
         logger.info('Cloud cookie fetched successfully.')
 
         let env = ''
+        const cookieMapList = Object.entries(cookieMap)
 
         for (const [key, value] of Object.entries(cookie_data)) {
+            if (key === 'weibo.com') { // 跳过 weibo.com
+                continue
+            }
             const cookies = value as any[]
+            const envKey = cookieMapList.find(([k, v]) => v === key)?.[0] || getEnvKey(key)
+            if (envKey === 'TWITTER_AUTH_TOKEN') { // TWITTER_AUTH_TOKEN 需要特殊处理
+                const authToken = cookies.find((cookie) => cookie.name === 'auth_token')// 只需要 auth_token 即可
+                if (authToken) {
+                    const authTokenStr = serializeCookie(authToken)
+                    const envStr = `${envKey}="${authTokenStr}"\n`
+                    env += envStr
+                    logger.info(`Processed cookies for domain: ${key}`)
+                    continue
+                }
+            }
             const cookieStr = cookies.map(serializeCookie).join('; ')
-            const envKey = cookieMap[key] || getEnvKey(key)
             const envStr = `${envKey}="${cookieStr}"\n`
             env += envStr
             logger.info(`Processed cookies for domain: ${key}`)
