@@ -91,7 +91,7 @@ async function main() {
             if (envKey === 'TWITTER_AUTH_TOKEN') { // TWITTER_AUTH_TOKEN 需要特殊处理
                 const authToken = cookies.find((cookie) => cookie.name === 'auth_token')// 只需要 auth_token 即可
                 if (authToken) {
-                    const authTokenStr = serializeCookie(authToken)
+                    const authTokenStr = encodeCookie(authToken.value)
                     const envStr = `${envKey}="${authTokenStr}"\n`
                     env += envStr
                     logger.info(`Processed cookies for domain: ${key}`)
